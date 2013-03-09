@@ -34,74 +34,78 @@
 	return scene;
 }
 
+- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInView:[touch view]];
+    location = [[CCDirector sharedDirector] convertToGL:location];
+    
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
+    CCSprite *projectile = [CCSprite spriteWithFile:@"Art/projectile.png" rect:CGRectMake(0, 0, 20, 20)];
+    projectile.position = ccp(20, winSize.height * 0.5);
+    
+    [self addChild:projectile];
+    
+    CGPoint realDest = ccp(winSize.width, winSize.height * 0.5);
+    float realMoveDuration = 1;
+    
+    NSLog(@"%f", realMoveDuration);
+    
+    [projectile runAction:[CCSequence actions:[CCMoveTo actionWithDuration:realMoveDuration position:realDest], [CCCallFuncN actionWithTarget:self selector:@selector(spriteMoveFinished:)], nil]];
+}
+
+- (void)spriteMoveFinished:(id)sender
+{
+    CCSprite *sprite = (CCSprite *)sender;
+    [self removeChild:sprite cleanup:YES];
+}
+
+- (void)addTarget
+{
+    CCSprite *target = [CCSprite spriteWithFile:@"Art/monster.png" rect:CGRectMake(0, 0, 27, 40)];
+    
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
+    int minY = target.contentSize.height * 0.5;
+    int maxY = winSize.height - target.contentSize.height * 0.5;
+    int rangeY = maxY - minY;
+    int actualY = (arc4random() % rangeY) + minY;
+    
+    target.position = ccp(winSize.width + (target.contentSize.width * 0.5), actualY);
+    [self addChild:target];
+    
+    int minDuration = 2.0;
+    int maxDuration = 4.0;
+    int rangeDuration = maxDuration - minDuration;
+    int actualDuration = (arc4random() % rangeDuration) + minDuration;
+    
+    id actionMove = [CCMoveTo actionWithDuration:actualDuration
+                                        position:ccp(-target.contentSize.width * 0.5, actualY)];
+    id actionMoveDone = [CCCallFuncN actionWithTarget:self selector:@selector(spriteMoveFinished:)];
+    [target runAction:[CCSequence actions:actionMove, actionMoveDone, nil]];
+}
+
+- (void)gameLogic:(ccTime)dt
+{
+    [self addTarget];
+}
+
 // on "init" you need to initialize your instance
 -(id) init
 {
-	// always call "super" init
-	// Apple recommends to re-assign "self" with the "super's" return value
-	if( (self=[super init]) ) {
-		
-		// create and initialize a Label
-		CCLabelTTF *label = [CCLabelTTF labelWithString:@"Hello World" fontName:@"Marker Felt" fontSize:64];
-
-		// ask director for the window size
-		CGSize size = [[CCDirector sharedDirector] winSize];
-	
-		// position the label on the center of the screen
-		label.position =  ccp( size.width /2 , size.height/2 );
-		
-		// add the label as a child to this Layer
-		[self addChild: label];
-		
-		
-		
-		//
-		// Leaderboards and Achievements
-		//
-		
-		// Default font size will be 28 points.
-		[CCMenuItemFont setFontSize:28];
-		
-		// Achievement Menu Item using blocks
-		CCMenuItem *itemAchievement = [CCMenuItemFont itemWithString:@"Achievements" block:^(id sender) {
-			
-			
-			GKAchievementViewController *achivementViewController = [[GKAchievementViewController alloc] init];
-			achivementViewController.achievementDelegate = self;
-			
-			AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
-			
-			[[app navController] presentModalViewController:achivementViewController animated:YES];
-			
-			[achivementViewController release];
-		}
-									   ];
-
-		// Leaderboard Menu Item using blocks
-		CCMenuItem *itemLeaderboard = [CCMenuItemFont itemWithString:@"Leaderboard" block:^(id sender) {
-			
-			
-			GKLeaderboardViewController *leaderboardViewController = [[GKLeaderboardViewController alloc] init];
-			leaderboardViewController.leaderboardDelegate = self;
-			
-			AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
-			
-			[[app navController] presentModalViewController:leaderboardViewController animated:YES];
-			
-			[leaderboardViewController release];
-		}
-									   ];
-		
-		CCMenu *menu = [CCMenu menuWithItems:itemAchievement, itemLeaderboard, nil];
-		
-		[menu alignItemsHorizontallyWithPadding:20];
-		[menu setPosition:ccp( size.width/2, size.height/2 - 50)];
-		
-		// Add the menu to the layer
-		[self addChild:menu];
-
-	}
-	return self;
+	if(self = [super initWithColor:ccc4(255, 255, 255, 255)])
+    {
+        self.isTouchEnabled = YES;
+        
+        CGSize winSize = [[CCDirector sharedDirector] winSize];
+        CCSprite *player = [CCSprite spriteWithFile:@"Art/player.png"
+                                               rect:CGRectMake(0, 0, 27, 40)];
+        player.position = ccp(player.contentSize.width * 0.5, winSize.height * 0.5);
+        [self addChild:player];
+    }
+    
+    [self schedule:@selector(gameLogic:) interval:1.0];
+    
+    return self;
 }
 
 // on "dealloc" you need to release all your retained objects
@@ -113,19 +117,5 @@
 	
 	// don't forget to call "super dealloc"
 	[super dealloc];
-}
-
-#pragma mark GameKit delegate
-
--(void) achievementViewControllerDidFinish:(GKAchievementViewController *)viewController
-{
-	AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
-	[[app navController] dismissModalViewControllerAnimated:YES];
-}
-
--(void) leaderboardViewControllerDidFinish:(GKLeaderboardViewController *)viewController
-{
-	AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
-	[[app navController] dismissModalViewControllerAnimated:YES];
 }
 @end
