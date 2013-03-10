@@ -467,7 +467,6 @@
 		2B1487BF16EBCB430023F6A4 = {
 			isa = PBXGroup;
 			children = (
-				2BE76CC116EC1ABC0027BF8B /* CoreMotion.framework */,
 				2B1487DD16EBCB430023F6A4 /* Orchid Storm */,
 				2B1487CA16EBCB430023F6A4 /* Frameworks */,
 				2B1487C916EBCB430023F6A4 /* Products */,
@@ -485,6 +484,7 @@
 		2B1487CA16EBCB430023F6A4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2BE76CC116EC1ABC0027BF8B /* CoreMotion.framework */,
 				2B1487CB16EBCB430023F6A4 /* QuartzCore.framework */,
 				2B1487CD16EBCB430023F6A4 /* OpenGLES.framework */,
 				2B1487CF16EBCB430023F6A4 /* OpenAL.framework */,
