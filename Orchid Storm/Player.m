@@ -1,7 +1,7 @@
 #import "Player.h"
 #import "GameScene.h"
 
-#define MOVEMENT_SPEED_MODIFIER 8
+#define MOVEMENT_SPEED_MODIFIER 12
 
 @implementation Player
 

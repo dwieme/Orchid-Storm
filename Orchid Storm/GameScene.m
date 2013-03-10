@@ -3,6 +3,7 @@
 #import "Unit.h"
 #import "Player.h"
 #import "Updateable.h"
+#import "EnemySpawner.h"
 #include <CoreMotion/CoreMotion.h>
 
 @interface GameScene ()
@@ -10,6 +11,7 @@
 @property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic) float lastPitch;
 @property (nonatomic, strong) GameLayer *layer;
+@property (nonatomic, strong) EnemySpawner *spawner;
 @end
 
 @implementation GameScene
@@ -32,6 +34,12 @@ static CGFloat screenHeight;
 {
     if (!_motionManager) _motionManager = [[CMMotionManager alloc] init];
     return _motionManager;
+}
+
+- (EnemySpawner *)spawner
+{
+    if (!_spawner) _spawner = [[EnemySpawner alloc] init];
+    return _spawner;
 }
 
 - (id)init
@@ -85,7 +93,6 @@ static CGFloat screenHeight;
 
 - (void)gameLoop
 {
-    NSLog(@"%d", [gameObjects count]);
     for (int i = [gameObjects count] - 1; i >= 0; --i) {
         id object = gameObjects[i];
         
@@ -102,6 +109,15 @@ static CGFloat screenHeight;
             self.lastPitch = pitch;
             [self.player updateMovement:pitch];
         }
+    }
+    
+    [self.spawner update];
+    
+    if ([self.spawner shouldSpawnEnemy])
+    {
+        Enemy *enemy = [self.spawner spawnEnemy];
+        [gameObjects addObject:enemy];
+        [self.layer addUnit:enemy];
     }
 }
 

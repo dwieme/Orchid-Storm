@@ -19,7 +19,8 @@
 
 - (void)addUnit:(Unit *)unit
 {
-    if ([unit isMemberOfClass:[Player class]]) {
+    if ([unit isMemberOfClass:[Player class]])
+    {
         self.player = (Player *)unit;
     }
     else if([unit isMemberOfClass:[Enemy class]])
