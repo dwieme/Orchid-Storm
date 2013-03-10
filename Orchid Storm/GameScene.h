@@ -3,5 +3,8 @@
 #import "GameLayer.h"
 
 @interface GameScene : CCScene
-@property (nonatomic, strong) GameLayer *layer;
++ (CGFloat)screenWidth;
++ (CGFloat)screenHeight;
++ (void)addGameObject:(id)object;
++ (void)removeGameObject:(id)object;
 @end

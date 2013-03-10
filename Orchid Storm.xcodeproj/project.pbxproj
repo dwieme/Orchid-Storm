@@ -145,6 +145,10 @@
 		2B1489A016EBEC0E0023F6A4 /* Unit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B14899F16EBEC0D0023F6A4 /* Unit.m */; };
 		2B1489A416EBF4860023F6A4 /* GameLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1489A316EBF4850023F6A4 /* GameLayer.m */; };
 		2B1489A716EBF4F70023F6A4 /* MenuLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1489A616EBF4F60023F6A4 /* MenuLayer.m */; };
+		2BE76CBA16EC12AD0027BF8B /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BE76CB916EC12AD0027BF8B /* Player.m */; };
+		2BE76CBD16EC13E50027BF8B /* Enemy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BE76CBC16EC13E50027BF8B /* Enemy.m */; };
+		2BE76CC016EC143E0027BF8B /* Projectile.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BE76CBF16EC143E0027BF8B /* Projectile.m */; };
+		2BE76CC216EC1ABC0027BF8B /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BE76CC116EC1ABC0027BF8B /* CoreMotion.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -429,6 +433,14 @@
 		2B1489A316EBF4850023F6A4 /* GameLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameLayer.m; sourceTree = "<group>"; };
 		2B1489A516EBF4F60023F6A4 /* MenuLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuLayer.h; sourceTree = "<group>"; };
 		2B1489A616EBF4F60023F6A4 /* MenuLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuLayer.m; sourceTree = "<group>"; };
+		2BE76CB416EC11760027BF8B /* Updateable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Updateable.h; sourceTree = "<group>"; };
+		2BE76CB816EC12AD0027BF8B /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
+		2BE76CB916EC12AD0027BF8B /* Player.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Player.m; sourceTree = "<group>"; };
+		2BE76CBB16EC13E50027BF8B /* Enemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Enemy.h; sourceTree = "<group>"; };
+		2BE76CBC16EC13E50027BF8B /* Enemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Enemy.m; sourceTree = "<group>"; };
+		2BE76CBE16EC143E0027BF8B /* Projectile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Projectile.h; sourceTree = "<group>"; };
+		2BE76CBF16EC143E0027BF8B /* Projectile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Projectile.m; sourceTree = "<group>"; };
+		2BE76CC116EC1ABC0027BF8B /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -436,6 +448,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BE76CC216EC1ABC0027BF8B /* CoreMotion.framework in Frameworks */,
 				2B1487CC16EBCB430023F6A4 /* QuartzCore.framework in Frameworks */,
 				2B1487CE16EBCB430023F6A4 /* OpenGLES.framework in Frameworks */,
 				2B1487D016EBCB430023F6A4 /* OpenAL.framework in Frameworks */,
@@ -454,6 +467,7 @@
 		2B1487BF16EBCB430023F6A4 = {
 			isa = PBXGroup;
 			children = (
+				2BE76CC116EC1ABC0027BF8B /* CoreMotion.framework */,
 				2B1487DD16EBCB430023F6A4 /* Orchid Storm */,
 				2B1487CA16EBCB430023F6A4 /* Frameworks */,
 				2B1487C916EBCB430023F6A4 /* Products */,
@@ -893,8 +907,15 @@
 		2B1489A116EBEC140023F6A4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				2BE76CB416EC11760027BF8B /* Updateable.h */,
+				2BE76CBE16EC143E0027BF8B /* Projectile.h */,
+				2BE76CBF16EC143E0027BF8B /* Projectile.m */,
 				2B14899E16EBEC0C0023F6A4 /* Unit.h */,
 				2B14899F16EBEC0D0023F6A4 /* Unit.m */,
+				2BE76CB816EC12AD0027BF8B /* Player.h */,
+				2BE76CB916EC12AD0027BF8B /* Player.m */,
+				2BE76CBB16EC13E50027BF8B /* Enemy.h */,
+				2BE76CBC16EC13E50027BF8B /* Enemy.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -1103,6 +1124,9 @@
 				2B1489A016EBEC0E0023F6A4 /* Unit.m in Sources */,
 				2B1489A416EBF4860023F6A4 /* GameLayer.m in Sources */,
 				2B1489A716EBF4F70023F6A4 /* MenuLayer.m in Sources */,
+				2BE76CBA16EC12AD0027BF8B /* Player.m in Sources */,
+				2BE76CBD16EC13E50027BF8B /* Enemy.m in Sources */,
+				2BE76CC016EC143E0027BF8B /* Projectile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1212,6 +1236,7 @@
 				2B14896216EBCB470023F6A4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

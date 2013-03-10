@@ -3,7 +3,7 @@
 //  Orchid Storm
 //
 //  Created by Dan Wieme on 3/9/13.
-//  Copyright __MyCompanyName__ 2013. All rights reserved.
+//  Copyright Sexy Incorporated 1990. All rights reserved.
 //
 
 
