@@ -1,10 +1,9 @@
 #import "Updateable.h"
 #import "Enemy.h"
+#import "GameScene.h"
 
 #import <Foundation/Foundation.h>
 
 @interface EnemySpawner : NSObject <Updateable>
-@property (nonatomic) BOOL shouldSpawnEnemy;
-
-- (Enemy *)spawnEnemy;
+- (id)initWithScene:(GameScene *)scene;
 @end

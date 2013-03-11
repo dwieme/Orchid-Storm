@@ -5,6 +5,24 @@
 
 @implementation Player
 
+- (id)initWithSprite:(CCSprite *)sprite
+         andPosition:(CGPoint)position
+              health:(NSInteger)health
+              damage:(NSUInteger)damage
+            onGround:(BOOL)onGround
+{
+    if(self = [super initWithSprite:sprite
+                        andPosition:position
+                             health:health
+                             damage:damage
+                           onGround:onGround])
+    {
+        
+    }
+    
+    return self;
+}
+
 - (void)updateMovement:(float)roll
 {
     if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeRight)

@@ -6,16 +6,17 @@
 
 @interface EnemySpawner ()
 @property (nonatomic) NSUInteger ticks;
+@property (nonatomic, strong) GameScene *scene;
 @end
 
 @implementation EnemySpawner
 
-- (id)init
+- (id)initWithScene:(GameScene *)scene
 {
     if(self = [super init])
     {
         _ticks = 0;
-        _shouldSpawnEnemy = NO;
+        _scene = scene;
     }
     
     return self;
@@ -26,19 +27,18 @@
     ++self.ticks;
     if (self.ticks == TICKS_THRESHOLD)
     {
-        self.shouldSpawnEnemy = YES;
+        CGPoint point = ccp([GameScene screenWidth] * 0.5, [GameScene screenHeight] + 20);
+        CCSprite *sprite = [[CCSprite alloc] initWithFile:@"monster.png"];
+        Enemy *enemy = [[Enemy alloc] initWithSprite:sprite
+                                         andPosition:point
+                                                type:Basic
+                                              health:10
+                                              damage:1
+                                           fireSpeed:150
+                                            onGround:YES];
+        [self.scene spawnEnemy:enemy onGround:YES];
         self.ticks = 0;
     }
-}
-
-- (Enemy *)spawnEnemy
-{
-    CGPoint point = ccp([GameScene screenWidth] * 0.5, [GameScene screenHeight]);
-    CCSprite *sprite = [[CCSprite alloc] initWithFile:@"monster.png"];
-    Enemy *enemy = [[Enemy alloc] initWithSprite:sprite
-                                     andPosition:point
-                                     type:Basic];
-    return enemy;
 }
 
 @end

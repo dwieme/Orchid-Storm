@@ -7,13 +7,17 @@
             position:(CGPoint)position
             velocity:(CGPoint)velocity
               damage:(NSUInteger)damage
+        friendlyFire:(BOOL)friendlyFire
+            onGround:(BOOL)onGround
 {
-    if(self = [super init])
+    if(self = [super initWithSprite:sprite
+                        andPosition:position
+                             health:1
+                             damage:damage
+                            onGround:onGround])
     {
-        self.sprite = sprite;
-        self.position = position;
         self.velocity = velocity;
-        self.damage = damage;
+        self.friendlyFire = friendlyFire;
     }
     
     return self;
@@ -30,8 +34,7 @@
         || self.position.y > [GameScene screenHeight]
         || self.position.y < 0)
     {
-        [[self.sprite parent] removeChild:self.sprite cleanup:YES];
-        [GameScene removeGameObject:self];
+        self.health = 0;
     }
 }
 
