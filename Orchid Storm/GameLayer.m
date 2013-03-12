@@ -57,22 +57,35 @@
 {
     self.isGround = isGround;
     
-    ccColor4B color;
-    
-    if(isGround)
-    {
-        color = ccc4(255, 255, 255, 255);
-    }
-    else
-    {
-        color = ccc4(0, 0, 255, 25);
-    }
-    
-    if(self = [super initWithColor:color])
+    if(self = [super init])
     {
         self.isTouchEnabled = YES;
     }
     
+    if(isGround)
+    {
+        CGFloat width = [GameScene screenWidth];
+        CGFloat height = [GameScene screenHeight];
+        CGFloat x = width * 0.5;
+        CGFloat y = height * 0.5;
+        
+        self.backgroundOne = [[CCSprite alloc] initWithFile:@"scrolling-background.png"];
+        self.backgroundTwo = [[CCSprite alloc] initWithFile:@"scrolling-background.png"];
+        
+        [self.backgroundOne setScale:self.backgroundOne.scale * 3];
+        [self.backgroundTwo setScale:self.backgroundTwo.scale * 3];
+        
+        [self.backgroundOne setPosition:ccp(x,y)];
+        [self.backgroundTwo setPosition:ccp(x, self.backgroundOne.position.y + [self.backgroundOne boundingBox].size.height)];
+        
+        [self addChild:self.backgroundOne];
+        [self addChild:self.backgroundTwo];
+    }
+    else
+    {
+        self.visible = NO;
+    }
+
     return self;
 }
 

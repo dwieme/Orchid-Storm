@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B03445E16EEAF3500AF479D /* background.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2B03445D16EEAF3500AF479D /* background.jpg */; };
+		2B03446016EEB13E00AF479D /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B03445F16EEB13E00AF479D /* background.png */; };
+		2B03446216EEB2EC00AF479D /* scrolling-background.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B03446116EEB2EC00AF479D /* scrolling-background.png */; };
 		2B1487CC16EBCB430023F6A4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B1487CB16EBCB430023F6A4 /* QuartzCore.framework */; };
 		2B1487CE16EBCB430023F6A4 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B1487CD16EBCB430023F6A4 /* OpenGLES.framework */; };
 		2B1487D016EBCB430023F6A4 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B1487CF16EBCB430023F6A4 /* OpenAL.framework */; };
@@ -153,6 +156,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B03445D16EEAF3500AF479D /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
+		2B03445F16EEB13E00AF479D /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
+		2B03446116EEB2EC00AF479D /* scrolling-background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "scrolling-background.png"; sourceTree = "<group>"; };
 		2B1487C816EBCB430023F6A4 /* Orchid Storm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Orchid Storm.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B1487CB16EBCB430023F6A4 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		2B1487CD16EBCB430023F6A4 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -884,6 +890,9 @@
 		2B14899016EBDFAC0023F6A4 /* Art */ = {
 			isa = PBXGroup;
 			children = (
+				2B03446116EEB2EC00AF479D /* scrolling-background.png */,
+				2B03445F16EEB13E00AF479D /* background.png */,
+				2B03445D16EEAF3500AF479D /* background.jpg */,
 				2B14899116EBDFD00023F6A4 /* monster-hd.png */,
 				2B14899216EBDFD00023F6A4 /* monster.png */,
 				2B14899316EBDFD00023F6A4 /* player-hd.png */,
@@ -1012,6 +1021,9 @@
 				2B14899A16EBDFD00023F6A4 /* player.png in Resources */,
 				2B14899B16EBDFD00023F6A4 /* projectile-hd.png in Resources */,
 				2B14899C16EBDFD00023F6A4 /* projectile.png in Resources */,
+				2B03445E16EEAF3500AF479D /* background.jpg in Resources */,
+				2B03446016EEB13E00AF479D /* background.png in Resources */,
+				2B03446216EEB2EC00AF479D /* scrolling-background.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

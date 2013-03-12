@@ -48,14 +48,15 @@ static CGFloat screenHeight;
 {
     if(self = [super init])
     {
-        _groundLayer = [[GameLayer alloc] initWithType:YES];
-        _skyLayer = [[GameLayer alloc] initWithType:NO];
-        [self addChild:_groundLayer];
-        [self addChild:_skyLayer];
-        
         CGSize winSize = [[CCDirector sharedDirector] winSize];
         screenWidth = winSize.width;
         screenHeight = winSize.height;
+        
+        _groundLayer = [[GameLayer alloc] initWithType:YES];
+        _skyLayer = [[GameLayer alloc] initWithType:NO];
+        
+        [self addChild:_groundLayer];
+        [self addChild:_skyLayer];
         
         gameObjects = [[NSMutableArray alloc] init];
 
@@ -99,9 +100,25 @@ static CGFloat screenHeight;
     [gameObjects removeObject:object];
 }
 
+- (void)scrollBackground:(CCSprite *)background
+{
+    CGPoint currPos = background.position;
+    [background setPosition:ccp(currPos.x, currPos.y - 5)];
+    
+    if (background.position.y + [background boundingBox].size.height * 0.5 < 0)
+    {
+        CGPoint newPos = ccp(background.position.x, background.position.y + (2 * [background boundingBox].size.height));
+        [background setPosition:newPos];
+    }
+}
+
 - (void)gameLoop
 {
 //    NSLog(@"NumObjectsInScene: %d", [gameObjects count]);
+    
+    [self scrollBackground:self.groundLayer.backgroundOne];
+    [self scrollBackground:self.groundLayer.backgroundTwo];
+    
     for (int i = [gameObjects count] - 1; i >= 0; --i) {
         id object = gameObjects[i];
         
@@ -226,6 +243,9 @@ static CGFloat screenHeight;
     self.playerIsOnGround = YES;
     [self.skyLayer removeChild:self.player.sprite cleanup:NO];
     [self.groundLayer addChild:self.player.sprite];
+    [self.groundLayer setScale:[self.groundLayer scale] * 1.25];
+    [self.skyLayer setVisible:NO];
+
     NSLog(@"Ground :(");
 }
 
@@ -235,6 +255,9 @@ static CGFloat screenHeight;
     self.playerIsOnGround = NO;
     [self.groundLayer removeChild:self.player.sprite cleanup:NO];
     [self.skyLayer addChild:self.player.sprite];
+    [self.groundLayer setScale:[self.groundLayer scale] * 0.8];
+    [self.skyLayer setVisible:YES];
+    
     NSLog(@"WE'RE FLYING");
 }
 
