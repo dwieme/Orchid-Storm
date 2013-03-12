@@ -9,11 +9,16 @@
 
 @interface GameScene ()
 @property (nonatomic, strong) CMMotionManager *motionManager;
-@property (nonatomic) float lastPitch;
 @property (nonatomic, strong) GameLayer *groundLayer;
 @property (nonatomic, strong) GameLayer *skyLayer;
 @property (nonatomic) BOOL playerIsOnGround;
 @property (nonatomic, strong) EnemySpawner *spawner;
+@property (nonatomic, strong) CCAction *landAction;
+@property (nonatomic, strong) CCAction *takeOffAction;
+@property (nonatomic, strong) CCAction *bankRightAction;
+@property (nonatomic, strong) CCAction *bankRightToNormalAction;
+@property (nonatomic, strong) CCAction *bankLeftAction;
+@property (nonatomic, strong) CCAction *bankLeftToNormalAction;
 @end
 
 @implementation GameScene
@@ -77,10 +82,69 @@ static CGFloat screenHeight;
 {
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     
-    CCSprite *playerSprite = [[CCSprite alloc] initWithFile:@"player.png"];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"playerShip.plist"];
+    CCSpriteBatchNode *spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"playerShip.png"];
+    [self.groundLayer addChild:spriteSheet];
+    
+    // LANDING ANIMATION
+    NSMutableArray *landAnimFrames = [NSMutableArray array];
+    for(int i = 0; i <= 23; ++i)
+    {
+        [landAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
+    }
+    CCAnimation *landAnim = [CCAnimation animationWithSpriteFrames:landAnimFrames delay:0.05f];
+    self.landAction = [CCAnimate actionWithAnimation:landAnim];
+    
+    // TAKE OFF ANIMATION
+    NSMutableArray *takeOffAnimFrames = [NSMutableArray array];
+    for(int i = 23; i >= 0; --i)
+    {
+        [takeOffAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
+    }
+    CCAnimation *takeOffAnim = [CCAnimation animationWithSpriteFrames:takeOffAnimFrames delay:0.05f];
+    self.takeOffAction = [CCAnimate actionWithAnimation:takeOffAnim];
+    
+    // BANK RIGHT ANIMATION
+    NSMutableArray *bankRightAnimFrames = [NSMutableArray array];
+    for(int i = 24; i <= 28; ++i)
+    {
+        [bankRightAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
+    }
+    CCAnimation *bankRightAnim = [CCAnimation animationWithSpriteFrames:bankRightAnimFrames delay:0.1f];
+    self.bankRightAction = [CCAnimate actionWithAnimation:bankRightAnim];
+    
+    // BANK RIGHT TO NORMAL ANIMATION
+    NSMutableArray *bankRightToNormalAnimFrames = [NSMutableArray array];
+    for(int i = 28; i >= 24; --i)
+    {
+        [bankRightToNormalAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
+    }
+    CCAnimation *bankRightToNormalAnim = [CCAnimation animationWithSpriteFrames:bankRightToNormalAnimFrames delay:0.1f];
+    self.bankRightToNormalAction = [CCAnimate actionWithAnimation:bankRightToNormalAnim];
+    
+    // BANK LEFT ANIMATION
+    NSMutableArray *bankLeftAnimFrames = [NSMutableArray array];
+    for(int i = 29; i <= 32; ++i)
+    {
+        [bankLeftAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
+    }
+    CCAnimation *bankLeftAnim = [CCAnimation animationWithSpriteFrames:bankLeftAnimFrames delay:0.1f];
+    self.bankLeftAction = [CCAnimate actionWithAnimation:bankLeftAnim];
+    
+    // BANK LEFT TO NORMAL ANIMATION
+    NSMutableArray *bankLeftToNormalAnimFrames = [NSMutableArray array];
+    for(int i = 32; i >= 29; --i)
+    {
+        [bankLeftToNormalAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
+    }
+    CCAnimation *bankLeftToNormalAnim = [CCAnimation animationWithSpriteFrames:bankLeftToNormalAnimFrames delay:0.1f];
+    self.bankLeftToNormalAction = [CCAnimate actionWithAnimation:bankLeftToNormalAnim];
+    
+    CCSprite *playerSprite = [CCSprite spriteWithSpriteFrameName:@"Player0023"];
+    [playerSprite setScale:playerSprite.scale * 0.5];
     self.player = [[Player alloc] initWithSprite:playerSprite
                                      andPosition:ccp(winSize.width * 0.5,
-                                                     playerSprite.contentSize.height * 0.5)
+                                                     (playerSprite.contentSize.height * 0.5) - 40)
                                           health:10
                                           damage:5
                                         onGround:YES];
@@ -105,7 +169,7 @@ static CGFloat screenHeight;
     CGPoint currPos = background.position;
     [background setPosition:ccp(currPos.x, currPos.y - 5)];
     
-    if (background.position.y + [background boundingBox].size.height * 0.5 < 0)
+    if (background.position.y + [background boundingBox].size.height * 0.5 < -40)
     {
         CGPoint newPos = ccp(background.position.x, background.position.y + (2 * [background boundingBox].size.height));
         [background setPosition:newPos];
@@ -131,6 +195,7 @@ static CGFloat screenHeight;
             
             CMAttitude *currentAttitude = currentDeviceMotion.attitude;
             float roll = currentAttitude.roll;
+            float pitch = currentAttitude.pitch;
             
             if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeRight)
             {
@@ -141,6 +206,30 @@ static CGFloat screenHeight;
                 else if(roll < -0.9 && self.playerIsOnGround)
                 {
                     [self fly];
+                }
+                
+                if (!self.playerIsOnGround)
+                {
+                    if (pitch > 0.01 && self.player.bankingState == Normal)
+                    {
+                        CCLOG(@"Right: %@", self.bankRightAction);
+                        //[self.player.sprite runAction:self.bankRightAction];
+                        self.player.bankingState = Right;
+                    }
+                    else if (pitch < -0.01 && self.player.bankingState == Normal)
+                    {
+                        CCLOG(@"Left: %@", self.bankLeftAction);
+                        //[self.player.sprite runAction:self.bankLeftAction];
+                        self.player.bankingState = Left;
+                    }
+                    else if (self.player.bankingState == Left)
+                    {
+                        self.player.bankingState = Normal;
+                    }
+                    else if (self.player.bankingState == Right)
+                    {
+                        self.player.bankingState = Normal;
+                    }
                 }
             }
             else if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeLeft)
@@ -155,8 +244,8 @@ static CGFloat screenHeight;
                 }
             }
             
-            float pitch = currentAttitude.pitch;
-            self.lastPitch = pitch;
+            NSLog(@"%f", pitch);
+            
             [self.player updateMovement:pitch];
         }
         
@@ -245,6 +334,7 @@ static CGFloat screenHeight;
     [self.groundLayer addChild:self.player.sprite];
     [self.groundLayer setScale:[self.groundLayer scale] * 1.25];
     [self.skyLayer setVisible:NO];
+    [self.player.sprite runAction:self.landAction];
 
     NSLog(@"Ground :(");
 }
@@ -257,6 +347,7 @@ static CGFloat screenHeight;
     [self.skyLayer addChild:self.player.sprite];
     [self.groundLayer setScale:[self.groundLayer scale] * 0.8];
     [self.skyLayer setVisible:YES];
+    [self.player.sprite runAction:self.takeOffAction];
     
     NSLog(@"WE'RE FLYING");
 }

@@ -17,7 +17,7 @@
                              damage:damage
                            onGround:onGround])
     {
-        
+        _bankingState = Normal;
     }
     
     return self;
