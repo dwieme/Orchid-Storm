@@ -151,6 +151,7 @@
 		2B1489A016EBEC0E0023F6A4 /* Unit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B14899F16EBEC0D0023F6A4 /* Unit.m */; };
 		2B1489A416EBF4860023F6A4 /* GameLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1489A316EBF4850023F6A4 /* GameLayer.m */; };
 		2B1489A716EBF4F70023F6A4 /* MenuLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1489A616EBF4F60023F6A4 /* MenuLayer.m */; };
+		2B69761C16F0158A001C7E52 /* Powerup.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B69761B16F0158A001C7E52 /* Powerup.m */; };
 		2BBCCDEE16ED3B8300AA166A /* EnemySpawner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCCDED16ED3B8300AA166A /* EnemySpawner.m */; };
 		2BE76CBA16EC12AD0027BF8B /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BE76CB916EC12AD0027BF8B /* Player.m */; };
 		2BE76CBD16EC13E50027BF8B /* Enemy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BE76CBC16EC13E50027BF8B /* Enemy.m */; };
@@ -446,6 +447,8 @@
 		2B1489A316EBF4850023F6A4 /* GameLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameLayer.m; sourceTree = "<group>"; };
 		2B1489A516EBF4F60023F6A4 /* MenuLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuLayer.h; sourceTree = "<group>"; };
 		2B1489A616EBF4F60023F6A4 /* MenuLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuLayer.m; sourceTree = "<group>"; };
+		2B69761A16F0158A001C7E52 /* Powerup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Powerup.h; sourceTree = "<group>"; };
+		2B69761B16F0158A001C7E52 /* Powerup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Powerup.m; sourceTree = "<group>"; };
 		2BBCCDEC16ED3B8300AA166A /* EnemySpawner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnemySpawner.h; sourceTree = "<group>"; };
 		2BBCCDED16ED3B8300AA166A /* EnemySpawner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnemySpawner.m; sourceTree = "<group>"; };
 		2BE76CB416EC11760027BF8B /* Updateable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Updateable.h; sourceTree = "<group>"; };
@@ -939,6 +942,8 @@
 				2BE76CBC16EC13E50027BF8B /* Enemy.m */,
 				2BBCCDEC16ED3B8300AA166A /* EnemySpawner.h */,
 				2BBCCDED16ED3B8300AA166A /* EnemySpawner.m */,
+				2B69761A16F0158A001C7E52 /* Powerup.h */,
+				2B69761B16F0158A001C7E52 /* Powerup.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -1157,6 +1162,7 @@
 				2BE76CBD16EC13E50027BF8B /* Enemy.m in Sources */,
 				2BE76CC016EC143E0027BF8B /* Projectile.m in Sources */,
 				2BBCCDEE16ED3B8300AA166A /* EnemySpawner.m in Sources */,
+				2B69761C16F0158A001C7E52 /* Powerup.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

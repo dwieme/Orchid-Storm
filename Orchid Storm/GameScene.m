@@ -7,11 +7,17 @@
 #import "Projectile.h"
 #include <CoreMotion/CoreMotion.h>
 
+#define SHIP_ANIMATION_TAG 1337
+
+typedef enum {
+    Flying, Driving, Landing, TakingOff
+} PlayerState;
+
 @interface GameScene ()
 @property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic, strong) GameLayer *groundLayer;
 @property (nonatomic, strong) GameLayer *skyLayer;
-@property (nonatomic) BOOL playerIsOnGround;
+@property (nonatomic) PlayerState playerState;
 @property (nonatomic, strong) EnemySpawner *spawner;
 @property (nonatomic, strong) CCAction *landAction;
 @property (nonatomic, strong) CCAction *takeOffAction;
@@ -94,6 +100,7 @@ static CGFloat screenHeight;
     }
     CCAnimation *landAnim = [CCAnimation animationWithSpriteFrames:landAnimFrames delay:0.05f];
     self.landAction = [CCAnimate actionWithAnimation:landAnim];
+    self.landAction.tag = SHIP_ANIMATION_TAG;
     
     // TAKE OFF ANIMATION
     NSMutableArray *takeOffAnimFrames = [NSMutableArray array];
@@ -103,6 +110,7 @@ static CGFloat screenHeight;
     }
     CCAnimation *takeOffAnim = [CCAnimation animationWithSpriteFrames:takeOffAnimFrames delay:0.05f];
     self.takeOffAction = [CCAnimate actionWithAnimation:takeOffAnim];
+    self.takeOffAction.tag = SHIP_ANIMATION_TAG;
     
     // BANK RIGHT ANIMATION
     NSMutableArray *bankRightAnimFrames = [NSMutableArray array];
@@ -112,6 +120,7 @@ static CGFloat screenHeight;
     }
     CCAnimation *bankRightAnim = [CCAnimation animationWithSpriteFrames:bankRightAnimFrames delay:0.1f];
     self.bankRightAction = [CCAnimate actionWithAnimation:bankRightAnim];
+    self.bankRightAction.tag = SHIP_ANIMATION_TAG;
     
     // BANK RIGHT TO NORMAL ANIMATION
     NSMutableArray *bankRightToNormalAnimFrames = [NSMutableArray array];
@@ -121,6 +130,7 @@ static CGFloat screenHeight;
     }
     CCAnimation *bankRightToNormalAnim = [CCAnimation animationWithSpriteFrames:bankRightToNormalAnimFrames delay:0.1f];
     self.bankRightToNormalAction = [CCAnimate actionWithAnimation:bankRightToNormalAnim];
+    self.bankRightToNormalAction.tag = SHIP_ANIMATION_TAG;
     
     // BANK LEFT ANIMATION
     NSMutableArray *bankLeftAnimFrames = [NSMutableArray array];
@@ -130,6 +140,7 @@ static CGFloat screenHeight;
     }
     CCAnimation *bankLeftAnim = [CCAnimation animationWithSpriteFrames:bankLeftAnimFrames delay:0.1f];
     self.bankLeftAction = [CCAnimate actionWithAnimation:bankLeftAnim];
+    self.bankLeftAction.tag = SHIP_ANIMATION_TAG;
     
     // BANK LEFT TO NORMAL ANIMATION
     NSMutableArray *bankLeftToNormalAnimFrames = [NSMutableArray array];
@@ -139,6 +150,7 @@ static CGFloat screenHeight;
     }
     CCAnimation *bankLeftToNormalAnim = [CCAnimation animationWithSpriteFrames:bankLeftToNormalAnimFrames delay:0.1f];
     self.bankLeftToNormalAction = [CCAnimate actionWithAnimation:bankLeftToNormalAnim];
+    self.bankLeftToNormalAction.tag = SHIP_ANIMATION_TAG;
     
     CCSprite *playerSprite = [CCSprite spriteWithSpriteFrameName:@"Player0023"];
     [playerSprite setScale:playerSprite.scale * 0.5];
@@ -148,7 +160,7 @@ static CGFloat screenHeight;
                                           health:10
                                           damage:5
                                         onGround:YES];
-    self.playerIsOnGround = YES;
+    self.playerState = Driving;
     [gameObjects addObject:self.player];
     
     [self.groundLayer addUnit:self.player];
@@ -199,52 +211,115 @@ static CGFloat screenHeight;
             
             if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeRight)
             {
-                if (roll > 0 && !self.playerIsOnGround)
+                if (roll > 0 && self.playerState == Flying)
                 {
                     [self land];
                 }
-                else if(roll < -0.9 && self.playerIsOnGround)
+                else if(roll < -0.9 && self.playerState == Driving)
                 {
                     [self fly];
                 }
                 
-                if (!self.playerIsOnGround)
+                if (self.playerState == Flying)
                 {
-                    if (pitch > 0.01 && self.player.bankingState == Normal)
+                    if (pitch > 0.1 && self.player.bankingState == Normal)
                     {
                         CCLOG(@"Right: %@", self.bankRightAction);
-                        //[self.player.sprite runAction:self.bankRightAction];
+                        
+                        if ([self.player.sprite numberOfRunningActions] > 0)
+                        {
+                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                        }
+                        [self.player.sprite runAction:self.bankRightAction];
                         self.player.bankingState = Right;
                     }
-                    else if (pitch < -0.01 && self.player.bankingState == Normal)
+                    else if (pitch < -0.1 && self.player.bankingState == Normal)
                     {
                         CCLOG(@"Left: %@", self.bankLeftAction);
-                        //[self.player.sprite runAction:self.bankLeftAction];
+                        
+                        if ([self.player.sprite numberOfRunningActions] > 0)
+                        {
+                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                        }
+                        [self.player.sprite runAction:self.bankLeftAction];
                         self.player.bankingState = Left;
                     }
-                    else if (self.player.bankingState == Left)
+                    else if (self.player.bankingState == Left && pitch > -0.1)
                     {
+                        if ([self.player.sprite numberOfRunningActions] > 0)
+                        {
+                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                        }
+                        [self.player.sprite runAction:self.bankLeftToNormalAction];
                         self.player.bankingState = Normal;
                     }
-                    else if (self.player.bankingState == Right)
+                    else if (self.player.bankingState == Right && pitch < 0.1)
                     {
+                        if ([self.player.sprite numberOfRunningActions] > 0)
+                        {
+                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                        }
+                        [self.player.sprite runAction:self.bankRightToNormalAction];
                         self.player.bankingState = Normal;
                     }
                 }
             }
             else if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeLeft)
             {
-                if (roll < 0 && !self.playerIsOnGround)
+                if (roll < 0 && self.playerState == Flying)
                 {
                     [self land];
                 }
-                else if(roll > 0.9 && self.playerIsOnGround)
+                else if(roll > 0.9 && self.playerState == Driving)
                 {
                     [self fly];
                 }
+                if (self.playerState == Flying)
+                {
+                    if (pitch < -0.1 && self.player.bankingState == Normal)
+                    {
+                        CCLOG(@"Right: %@", self.bankRightAction);
+                        
+                        if ([self.player.sprite numberOfRunningActions] > 0)
+                        {
+                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                        }
+                        [self.player.sprite runAction:self.bankRightAction];
+                        self.player.bankingState = Right;
+                    }
+                    else if (pitch > 0.1 && self.player.bankingState == Normal)
+                    {
+                        CCLOG(@"Left: %@", self.bankLeftAction);
+                        
+                        if ([self.player.sprite numberOfRunningActions] > 0)
+                        {
+                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                        }
+                        [self.player.sprite runAction:self.bankLeftAction];
+                        self.player.bankingState = Left;
+                    }
+                    else if (self.player.bankingState == Left && pitch < 0.1)
+                    {
+                        if ([self.player.sprite numberOfRunningActions] > 0)
+                        {
+                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                        }
+                        [self.player.sprite runAction:self.bankLeftToNormalAction];
+                        self.player.bankingState = Normal;
+                    }
+                    else if (self.player.bankingState == Right && pitch > -0.1)
+                    {
+                        if ([self.player.sprite numberOfRunningActions] > 0)
+                        {
+                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                        }
+                        [self.player.sprite runAction:self.bankRightToNormalAction];
+                        self.player.bankingState = Normal;
+                    }
+                }
             }
             
-            NSLog(@"%f", pitch);
+//            NSLog(@"%f", pitch);
             
             [self.player updateMovement:pitch];
         }
@@ -294,7 +369,7 @@ static CGFloat screenHeight;
             }
             else
             {
-                if (proj.onGround == self.playerIsOnGround)
+                if (proj.onGround == (self.playerState == Driving))
                 {
                     Player *player = self.player;
                     NSInteger diffX = [player position].x - [proj position].x;
@@ -328,28 +403,44 @@ static CGFloat screenHeight;
 
 - (void)land
 {
+    self.playerState = Landing;
+    [self.groundLayer runAction:[CCSequence actionOne:[CCScaleTo actionWithDuration:2 scale:[self.groundLayer scale] * 1.25]
+                                                  two:[CCCallFunc actionWithTarget:self selector:@selector(switchPlayerToGround)]]];
+    if ([self.player.sprite numberOfRunningActions] > 0)
+    {
+        [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+    }
+    [self.player.sprite runAction:self.landAction];
+}
+
+- (void)switchPlayerToGround
+{
     self.player.onGround = YES;
-    self.playerIsOnGround = YES;
+    self.playerState = Driving;
     [self.skyLayer removeChild:self.player.sprite cleanup:NO];
     [self.groundLayer addChild:self.player.sprite];
-    [self.groundLayer setScale:[self.groundLayer scale] * 1.25];
     [self.skyLayer setVisible:NO];
-    [self.player.sprite runAction:self.landAction];
-
-    NSLog(@"Ground :(");
 }
 
 - (void)fly
 {
-    self.player.onGround = NO;
-    self.playerIsOnGround = NO;
+    self.playerState = TakingOff;
     [self.groundLayer removeChild:self.player.sprite cleanup:NO];
     [self.skyLayer addChild:self.player.sprite];
-    [self.groundLayer setScale:[self.groundLayer scale] * 0.8];
+    [self.groundLayer runAction:[CCSequence actionOne:[CCScaleTo actionWithDuration:2 scale:[self.groundLayer scale] * 0.8]
+                                                  two:[CCCallFunc actionWithTarget:self selector:@selector(switchPlayerToSky)]]];
     [self.skyLayer setVisible:YES];
+    if ([self.player.sprite numberOfRunningActions] > 0)
+    {
+        [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+    }
     [self.player.sprite runAction:self.takeOffAction];
-    
-    NSLog(@"WE'RE FLYING");
+}
+
+- (void)switchPlayerToSky
+{
+    self.player.onGround = NO;
+    self.playerState = Flying;
 }
 
 - (void)spawnEnemy:(Enemy *)enemy onGround:(BOOL)onGround
