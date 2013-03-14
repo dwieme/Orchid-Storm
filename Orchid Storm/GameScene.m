@@ -5,9 +5,12 @@
 #import "Updateable.h"
 #import "EnemySpawner.h"
 #import "Projectile.h"
+#import "Powerup.h"
 #include <CoreMotion/CoreMotion.h>
 
 #define SHIP_ANIMATION_TAG 1337
+
+#define SCROLL_SPEED 3
 
 typedef enum {
     Flying, Driving, Landing, TakingOff
@@ -179,7 +182,7 @@ static CGFloat screenHeight;
 - (void)scrollBackground:(CCSprite *)background
 {
     CGPoint currPos = background.position;
-    [background setPosition:ccp(currPos.x, currPos.y - 5)];
+    [background setPosition:ccp(currPos.x, currPos.y - SCROLL_SPEED)];
     
     if (background.position.y + [background boundingBox].size.height * 0.5 < -40)
     {
@@ -203,125 +206,45 @@ static CGFloat screenHeight;
         }
         
         if ([object isMemberOfClass:[Player class]]) {
-            CMDeviceMotion *currentDeviceMotion = self.motionManager.deviceMotion;
+            [self updatePlayer];
+        }
+        
+        if ([object isMemberOfClass:[Powerup class]]) {
+            Powerup *powerUp = (Powerup *)object;
+            [powerUp setPosition:ccp(powerUp.position.x,powerUp.position.y - SCROLL_SPEED)];
             
-            CMAttitude *currentAttitude = currentDeviceMotion.attitude;
-            float roll = currentAttitude.roll;
-            float pitch = currentAttitude.pitch;
-            
-            if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeRight)
-            {
-                if (roll > 0 && self.playerState == Flying)
-                {
-                    [self land];
-                }
-                else if(roll < -0.9 && self.playerState == Driving)
-                {
-                    [self fly];
-                }
-                
-                if (self.playerState == Flying)
-                {
-                    if (pitch > 0.1 && self.player.bankingState == Normal)
-                    {
-                        CCLOG(@"Right: %@", self.bankRightAction);
-                        
-                        if ([self.player.sprite numberOfRunningActions] > 0)
-                        {
-                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
-                        }
-                        [self.player.sprite runAction:self.bankRightAction];
-                        self.player.bankingState = Right;
-                    }
-                    else if (pitch < -0.1 && self.player.bankingState == Normal)
-                    {
-                        CCLOG(@"Left: %@", self.bankLeftAction);
-                        
-                        if ([self.player.sprite numberOfRunningActions] > 0)
-                        {
-                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
-                        }
-                        [self.player.sprite runAction:self.bankLeftAction];
-                        self.player.bankingState = Left;
-                    }
-                    else if (self.player.bankingState == Left && pitch > -0.1)
-                    {
-                        if ([self.player.sprite numberOfRunningActions] > 0)
-                        {
-                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
-                        }
-                        [self.player.sprite runAction:self.bankLeftToNormalAction];
-                        self.player.bankingState = Normal;
-                    }
-                    else if (self.player.bankingState == Right && pitch < 0.1)
-                    {
-                        if ([self.player.sprite numberOfRunningActions] > 0)
-                        {
-                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
-                        }
-                        [self.player.sprite runAction:self.bankRightToNormalAction];
-                        self.player.bankingState = Normal;
-                    }
-                }
-            }
-            else if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeLeft)
-            {
-                if (roll < 0 && self.playerState == Flying)
-                {
-                    [self land];
-                }
-                else if(roll > 0.9 && self.playerState == Driving)
-                {
-                    [self fly];
-                }
-                if (self.playerState == Flying)
-                {
-                    if (pitch < -0.1 && self.player.bankingState == Normal)
-                    {
-                        CCLOG(@"Right: %@", self.bankRightAction);
-                        
-                        if ([self.player.sprite numberOfRunningActions] > 0)
-                        {
-                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
-                        }
-                        [self.player.sprite runAction:self.bankRightAction];
-                        self.player.bankingState = Right;
-                    }
-                    else if (pitch > 0.1 && self.player.bankingState == Normal)
-                    {
-                        CCLOG(@"Left: %@", self.bankLeftAction);
-                        
-                        if ([self.player.sprite numberOfRunningActions] > 0)
-                        {
-                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
-                        }
-                        [self.player.sprite runAction:self.bankLeftAction];
-                        self.player.bankingState = Left;
-                    }
-                    else if (self.player.bankingState == Left && pitch < 0.1)
-                    {
-                        if ([self.player.sprite numberOfRunningActions] > 0)
-                        {
-                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
-                        }
-                        [self.player.sprite runAction:self.bankLeftToNormalAction];
-                        self.player.bankingState = Normal;
-                    }
-                    else if (self.player.bankingState == Right && pitch > -0.1)
-                    {
-                        if ([self.player.sprite numberOfRunningActions] > 0)
-                        {
-                            [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
-                        }
-                        [self.player.sprite runAction:self.bankRightToNormalAction];
-                        self.player.bankingState = Normal;
-                    }
-                }
+            if(powerUp.position.y < -30){
+                powerUp.health = 0;
             }
             
-//            NSLog(@"%f", pitch);
-            
-            [self.player updateMovement:pitch];
+            Player *player = self.player;
+            if (powerUp.onGround == player.onGround)
+            {
+                NSInteger diffX = [player position].x - [powerUp position].x;
+                NSInteger diffY = [player position].y - [powerUp position].y;
+                NSInteger manhattanDist = (diffX * diffX) + (diffY * diffY);
+                if(manhattanDist < 625)
+                {
+                    switch (powerUp.type) {
+                        case Health:
+                            player.health += powerUp.health;
+                            break;
+                        case Life:
+                            player.lives += powerUp.health;
+                            break;
+                        case Weapon:
+                            player.weaponType +=1;
+                            if(player.weaponType>6){
+                                player.damage +=1;
+                            }
+                            
+                            break;
+                        default:
+                            break;
+                    }
+                    powerUp.health = 0;
+                }
+            }
         }
         
         if ([object isMemberOfClass:[Projectile class]])
@@ -369,9 +292,9 @@ static CGFloat screenHeight;
             }
             else
             {
-                if (proj.onGround == (self.playerState == Driving))
+                Player *player = self.player;
+                if (proj.onGround == player.onGround)
                 {
-                    Player *player = self.player;
                     NSInteger diffX = [player position].x - [proj position].x;
                     NSInteger diffY = [player position].y - [proj position].y;
                     NSInteger manhattanDist = (diffX * diffX) + (diffY * diffY);
@@ -389,6 +312,25 @@ static CGFloat screenHeight;
             Unit *unit = (Unit *)gameObjects[i];
             
             if (unit.health <= 0) {
+                
+                if([unit isMemberOfClass:[Enemy class]]){
+                    int r = arc4random() % 100;
+                    
+                    if(r > 0){
+                        CCSprite *puSprite = [[CCSprite alloc] initWithFile:@"ButtonStar.png"];
+                        Powerup *p = [[Powerup alloc] initWithSprite:puSprite andPosition:unit.position health:1 damage:1 onGround:unit.onGround type:Weapon];
+                        if(unit.onGround){
+                            [self.groundLayer addUnit:p];
+                        } else {
+                            [self.skyLayer addUnit:p];
+                        }
+                        [gameObjects addObject:p];
+                    }
+                }
+                
+                
+                
+                
                 GameLayer *layer = (GameLayer *)[unit.sprite parent];
                 [layer removeChild:unit.sprite cleanup:YES];
                 [[layer enemies] removeObject:unit];
@@ -399,6 +341,129 @@ static CGFloat screenHeight;
     }
     
     [self.spawner update];
+}
+
+- (void)updatePlayer
+{
+    CMDeviceMotion *currentDeviceMotion = self.motionManager.deviceMotion;
+    
+    CMAttitude *currentAttitude = currentDeviceMotion.attitude;
+    float roll = currentAttitude.roll;
+    float pitch = currentAttitude.pitch;
+    
+    if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeRight)
+    {
+        if (roll > 0 && self.playerState == Flying)
+        {
+            [self land];
+        }
+        else if(roll < -0.9 && self.playerState == Driving)
+        {
+            [self fly];
+        }
+        
+        if (self.playerState == Flying)
+        {
+            if (pitch > 0.1 && self.player.bankingState == Normal)
+            {
+                CCLOG(@"Right: %@", self.bankRightAction);
+                
+                if ([self.player.sprite numberOfRunningActions] > 0)
+                {
+                    [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                }
+                [self.player.sprite runAction:self.bankRightAction];
+                self.player.bankingState = Right;
+            }
+            else if (pitch < -0.1 && self.player.bankingState == Normal)
+            {
+                CCLOG(@"Left: %@", self.bankLeftAction);
+                
+                if ([self.player.sprite numberOfRunningActions] > 0)
+                {
+                    [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                }
+                [self.player.sprite runAction:self.bankLeftAction];
+                self.player.bankingState = Left;
+            }
+            else if (self.player.bankingState == Left && pitch > -0.1)
+            {
+                if ([self.player.sprite numberOfRunningActions] > 0)
+                {
+                    [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                }
+                [self.player.sprite runAction:self.bankLeftToNormalAction];
+                self.player.bankingState = Normal;
+            }
+            else if (self.player.bankingState == Right && pitch < 0.1)
+            {
+                if ([self.player.sprite numberOfRunningActions] > 0)
+                {
+                    [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                }
+                [self.player.sprite runAction:self.bankRightToNormalAction];
+                self.player.bankingState = Normal;
+            }
+        }
+    }
+    else if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeLeft)
+    {
+        if (roll < 0 && self.playerState == Flying)
+        {
+            [self land];
+        }
+        else if(roll > 0.9 && self.playerState == Driving)
+        {
+            [self fly];
+        }
+        if (self.playerState == Flying)
+        {
+            if (pitch < -0.1 && self.player.bankingState == Normal)
+            {
+                CCLOG(@"Right: %@", self.bankRightAction);
+                
+                if ([self.player.sprite numberOfRunningActions] > 0)
+                {
+                    [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                }
+                [self.player.sprite runAction:self.bankRightAction];
+                self.player.bankingState = Right;
+            }
+            else if (pitch > 0.1 && self.player.bankingState == Normal)
+            {
+                CCLOG(@"Left: %@", self.bankLeftAction);
+                
+                if ([self.player.sprite numberOfRunningActions] > 0)
+                {
+                    [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                }
+                [self.player.sprite runAction:self.bankLeftAction];
+                self.player.bankingState = Left;
+            }
+            else if (self.player.bankingState == Left && pitch < 0.1)
+            {
+                if ([self.player.sprite numberOfRunningActions] > 0)
+                {
+                    [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                }
+                [self.player.sprite runAction:self.bankLeftToNormalAction];
+                self.player.bankingState = Normal;
+            }
+            else if (self.player.bankingState == Right && pitch > -0.1)
+            {
+                if ([self.player.sprite numberOfRunningActions] > 0)
+                {
+                    [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
+                }
+                [self.player.sprite runAction:self.bankRightToNormalAction];
+                self.player.bankingState = Normal;
+            }
+        }
+    }
+    
+    //            NSLog(@"%f", pitch);
+    
+    [self.player updateMovement:pitch];
 }
 
 - (void)land

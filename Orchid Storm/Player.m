@@ -18,6 +18,8 @@
                            onGround:onGround])
     {
         _bankingState = Normal;
+        _weaponType = 1;
+        _lives = 3;
     }
     
     return self;

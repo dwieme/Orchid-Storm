@@ -7,6 +7,8 @@ typedef enum {
 } BankingState;
 
 @property (nonatomic) BankingState bankingState;
+@property (nonatomic) NSUInteger weaponType;
+@property (nonatomic) NSUInteger lives;
 
 - (id)initWithSprite:(CCSprite *)sprite
          andPosition:(CGPoint)position

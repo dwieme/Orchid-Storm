@@ -36,14 +36,221 @@
     GameScene *parent = (GameScene *)[self parent];
     if(self.isGround == parent.player.onGround)
     {
-        CCSprite *sprite = [[CCSprite alloc] initWithFile:@"projectile.png"];
-        Projectile *proj = [[Projectile alloc] initWithSprite:sprite
-                                                     position:parent.player.position
-                                                     velocity:ccp(0, 5)
-                                                       damage:parent.player.damage
-                                                 friendlyFire:YES
-                                                     onGround:parent.player.onGround];
-        [self spawnProjectile:proj];
+        switch(parent.player.weaponType){
+            case 1:
+            {
+                CCSprite *sprite = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *proj = [[Projectile alloc] initWithSprite:sprite
+                                                 position:ccp(parent.player.position.x, parent.player.position.y +5)
+                                                 velocity:ccp(0, 5)
+                                                   damage:parent.player.damage
+                                             friendlyFire:YES
+                                                 onGround:parent.player.onGround];
+                [self spawnProjectile:proj];
+                break;
+            }
+            case 2:
+            {
+                CCSprite *sprite = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *proj = [[Projectile alloc] initWithSprite:sprite
+                                                 position:ccp(parent.player.position.x+5, parent.player.position.y +5)
+                                                 velocity:ccp(0, 5)
+                                                   damage:parent.player.damage
+                                             friendlyFire:YES
+                                                 onGround:parent.player.onGround];
+                [self spawnProjectile:proj];
+                CCSprite *spriteTwo = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projTwo= [[Projectile alloc] initWithSprite:spriteTwo
+                                                 position:ccp(parent.player.position.x-5, parent.player.position.y +5)
+                                                 velocity:ccp(0, 5)
+                                                   damage:parent.player.damage
+                                             friendlyFire:YES
+                                                 onGround:parent.player.onGround];
+                [self spawnProjectile:projTwo];
+                break;
+            }
+            case 3:
+            {
+                CCSprite *sprite = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *proj = [[Projectile alloc] initWithSprite:sprite
+                                                             position:ccp(parent.player.position.x, parent.player.position.y +5)
+                                                             velocity:ccp(0, 5)
+                                                               damage:parent.player.damage
+                                                         friendlyFire:YES
+                                                             onGround:parent.player.onGround];
+                [self spawnProjectile:proj];
+                
+                CCSprite *spriteTwo = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projTwo= [[Projectile alloc] initWithSprite:spriteTwo
+                                                               position:ccp(parent.player.position.x+5, parent.player.position.y +5)
+                                                               velocity:ccp(1, 4)
+                                                                 damage:parent.player.damage
+                                                           friendlyFire:YES
+                                                               onGround:parent.player.onGround];
+                [self spawnProjectile:projTwo];
+                
+                CCSprite *spriteThree = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projThree= [[Projectile alloc] initWithSprite:spriteThree
+                                                               position:ccp(parent.player.position.x-5, parent.player.position.y +5)
+                                                               velocity:ccp(-1, 4)
+                                                                 damage:parent.player.damage
+                                                           friendlyFire:YES
+                                                               onGround:parent.player.onGround];
+                [self spawnProjectile:projThree];
+                
+                break;
+            }
+            case 4:
+            {
+                CCSprite *sprite = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *proj = [[Projectile alloc] initWithSprite:sprite
+                                                             position:ccp(parent.player.position.x+5, parent.player.position.y +5)
+                                                             velocity:ccp(1, 4)
+                                                               damage:parent.player.damage
+                                                         friendlyFire:YES
+                                                             onGround:parent.player.onGround];
+                [self spawnProjectile:proj];
+                
+                CCSprite *spriteTwo = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projTwo= [[Projectile alloc] initWithSprite:spriteTwo
+                                                               position:ccp(parent.player.position.x-5, parent.player.position.y +5)
+                                                               velocity:ccp(-1, 4)
+                                                                 damage:parent.player.damage
+                                                           friendlyFire:YES
+                                                               onGround:parent.player.onGround];
+                [self spawnProjectile:projTwo];
+                
+                CCSprite *spriteThree = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projThree= [[Projectile alloc] initWithSprite:spriteThree
+                                                                 position:ccp(parent.player.position.x+10, parent.player.position.y +5)
+                                                                 velocity:ccp(2, 3)
+                                                                   damage:parent.player.damage
+                                                             friendlyFire:YES
+                                                                 onGround:parent.player.onGround];
+                [self spawnProjectile:projThree];
+                
+                CCSprite *spriteFour = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projFour= [[Projectile alloc] initWithSprite:spriteFour
+                                                                 position:ccp(parent.player.position.x-10, parent.player.position.y +5)
+                                                                 velocity:ccp(-2, 3)
+                                                                   damage:parent.player.damage
+                                                             friendlyFire:YES
+                                                                 onGround:parent.player.onGround];
+                [self spawnProjectile:projFour];
+                
+                break;
+            }
+            case 5:
+            {
+                CCSprite *sprite = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *proj = [[Projectile alloc] initWithSprite:sprite
+                                                             position:ccp(parent.player.position.x+5, parent.player.position.y +5)
+                                                             velocity:ccp(1, 4)
+                                                               damage:parent.player.damage
+                                                         friendlyFire:YES
+                                                             onGround:parent.player.onGround];
+                [self spawnProjectile:proj];
+                
+                CCSprite *spriteTwo = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projTwo= [[Projectile alloc] initWithSprite:spriteTwo
+                                                               position:ccp(parent.player.position.x-5, parent.player.position.y +5)
+                                                               velocity:ccp(-1, 4)
+                                                                 damage:parent.player.damage
+                                                           friendlyFire:YES
+                                                               onGround:parent.player.onGround];
+                [self spawnProjectile:projTwo];
+                
+                CCSprite *spriteThree = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projThree= [[Projectile alloc] initWithSprite:spriteThree
+                                                                 position:ccp(parent.player.position.x+10, parent.player.position.y +5)
+                                                                 velocity:ccp(2, 3)
+                                                                   damage:parent.player.damage
+                                                             friendlyFire:YES
+                                                                 onGround:parent.player.onGround];
+                [self spawnProjectile:projThree];
+                
+                CCSprite *spriteFour = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projFour= [[Projectile alloc] initWithSprite:spriteFour
+                                                                position:ccp(parent.player.position.x-10, parent.player.position.y +5)
+                                                                velocity:ccp(-2, 3)
+                                                                  damage:parent.player.damage
+                                                            friendlyFire:YES
+                                                                onGround:parent.player.onGround];
+                [self spawnProjectile:projFour];
+                
+                CCSprite *spriteFive = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projFive = [[Projectile alloc] initWithSprite:spriteFive
+                                                             position:ccp(parent.player.position.x, parent.player.position.y +5)
+                                                             velocity:ccp(0, 5)
+                                                               damage:parent.player.damage
+                                                         friendlyFire:YES
+                                                             onGround:parent.player.onGround];
+                [self spawnProjectile:projFive];
+                
+                break;
+            }
+                
+            default:
+            {
+                CCSprite *sprite = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *proj = [[Projectile alloc] initWithSprite:sprite
+                                                             position:ccp(parent.player.position.x+5, parent.player.position.y +5)
+                                                             velocity:ccp(1, 4)
+                                                               damage:parent.player.damage
+                                                         friendlyFire:YES
+                                                             onGround:parent.player.onGround];
+                [self spawnProjectile:proj];
+                
+                CCSprite *spriteTwo = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projTwo= [[Projectile alloc] initWithSprite:spriteTwo
+                                                               position:ccp(parent.player.position.x-5, parent.player.position.y +5)
+                                                               velocity:ccp(-1, 4)
+                                                                 damage:parent.player.damage
+                                                           friendlyFire:YES
+                                                               onGround:parent.player.onGround];
+                [self spawnProjectile:projTwo];
+                
+                CCSprite *spriteThree = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projThree= [[Projectile alloc] initWithSprite:spriteThree
+                                                                 position:ccp(parent.player.position.x+10, parent.player.position.y +5)
+                                                                 velocity:ccp(2, 3)
+                                                                   damage:parent.player.damage
+                                                             friendlyFire:YES
+                                                                 onGround:parent.player.onGround];
+                [self spawnProjectile:projThree];
+                
+                CCSprite *spriteFour = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projFour= [[Projectile alloc] initWithSprite:spriteFour
+                                                                position:ccp(parent.player.position.x-10, parent.player.position.y +5)
+                                                                velocity:ccp(-2, 3)
+                                                                  damage:parent.player.damage
+                                                            friendlyFire:YES
+                                                                onGround:parent.player.onGround];
+                [self spawnProjectile:projFour];
+                
+                CCSprite *spriteFive = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projFive = [[Projectile alloc] initWithSprite:spriteFive
+                                                                 position:ccp(parent.player.position.x+5, parent.player.position.y +5)
+                                                                 velocity:ccp(0, 5)
+                                                                   damage:parent.player.damage
+                                                             friendlyFire:YES
+                                                                 onGround:parent.player.onGround];
+                [self spawnProjectile:projFive];
+                
+                CCSprite *spriteSix = [[CCSprite alloc] initWithFile:@"projectile.png"];
+                Projectile *projSix = [[Projectile alloc] initWithSprite:spriteSix
+                                                                 position:ccp(parent.player.position.x-5, parent.player.position.y +5)
+                                                                 velocity:ccp(0, 5)
+                                                                   damage:parent.player.damage
+                                                             friendlyFire:YES
+                                                                 onGround:parent.player.onGround];
+                [self spawnProjectile:projSix];
+                
+                break;
+            }
+                
+        }
+        
     }
 }
 

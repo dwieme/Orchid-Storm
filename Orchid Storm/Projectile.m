@@ -32,7 +32,7 @@
     if (self.position.x > [GameScene screenWidth]
         || self.position.x < 0
         || self.position.y > [GameScene screenHeight]
-        || self.position.y < 0)
+        || self.position.y < -30)
     {
         self.health = 0;
     }
