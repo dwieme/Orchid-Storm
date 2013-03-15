@@ -29,12 +29,21 @@
     {
         CGPoint point = ccp([GameScene screenWidth] * 0.5, [GameScene screenHeight] + 20);
         CCSprite *sprite = [[CCSprite alloc] initWithFile:@"monster.png"];
+        
+        CGPoint waypointOne = ccp([GameScene screenWidth] , ([GameScene screenHeight]*2) / 3);
+        CGPoint waypointTwo = ccp(0, ([GameScene screenHeight]*2) / 3);
+        NSMutableArray *wayPoints = [[NSMutableArray alloc] initWithArray:@[[NSValue valueWithCGPoint:waypointOne],
+                                                                            [NSValue valueWithCGPoint:waypointTwo]]];
+        
         Enemy *enemy = [[Enemy alloc] initWithSprite:sprite
                                          andPosition:point
-                                                type:Basic
+                                            fireType:TargetPlayer
+                                        movementType:Landlocked
+                                           wayPoints:wayPoints
                                               health:10
                                               damage:1
-                                           fireSpeed:150
+                                           fireSpeed:30
+                                               speed:SCROLL_SPEED
                                             onGround:YES];
         [self.scene spawnEnemy:enemy onGround:YES];
         self.ticks = 0;

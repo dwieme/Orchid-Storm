@@ -3,6 +3,8 @@
 #import "GameLayer.h"
 #import "Enemy.h"
 
+#define SCROLL_SPEED 3
+
 @interface GameScene : CCScene
 @property (nonatomic, strong) Player *player;
 

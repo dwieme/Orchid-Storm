@@ -10,7 +10,7 @@
 
 #define SHIP_ANIMATION_TAG 1337
 
-#define SCROLL_SPEED 3
+
 
 typedef enum {
     Flying, Driving, Landing, TakingOff
@@ -207,6 +207,22 @@ static CGFloat screenHeight;
         
         if ([object isMemberOfClass:[Player class]]) {
             [self updatePlayer];
+        }
+        
+        if ([object isMemberOfClass:[Enemy class]]) {
+            Enemy *enemy = (Enemy *)object;
+            Player *player = self.player;
+            if (enemy.onGround == player.onGround)
+            {
+                NSInteger diffX = [player position].x - [enemy position].x;
+                NSInteger diffY = [player position].y - [enemy position].y;
+                NSInteger manhattanDist = (diffX * diffX) + (diffY * diffY);
+                if(manhattanDist < 625)
+                {
+                    enemy.health = 0;
+                    player.health -= enemy.damage;
+                }
+            }
         }
         
         if ([object isMemberOfClass:[Powerup class]]) {
