@@ -1,6 +1,4 @@
-#import "cocos2d.h"
 #import "MenuLayer.h"
-#import "GameScene.h"
 
 @implementation MenuLayer
 
@@ -9,15 +7,20 @@
     [super onEnter];
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     
-    CCMenuItem *starMenuItem = [CCMenuItemImage itemWithNormalImage:@"ButtonStar.png"
-                                                      selectedImage:@"ButtonStarSel.png"
+    CCSprite *splash = [[CCSprite alloc] initWithFile:@"mainSplash.png"];
+    [splash setPosition:ccp(winSize.width / 2, winSize.height / 2)];
+    [self addChild:splash];
+    
+    CCMenuItem *menuItem = [CCMenuItemImage itemWithNormalImage:@"unpressedButton.png"
+                                                      selectedImage:@"pressedButton.png"
                                                              target:self
                                                            selector:@selector(starButtonTapped:)];
     
-    starMenuItem.position = ccp(60, 60);
-    CCMenu *starMenu = [CCMenu menuWithItems:starMenuItem, nil];
-    starMenu.position = CGPointZero;
-    [self addChild:starMenu];
+    [menuItem setScale:2];
+    menuItem.position = ccp(winSize.width / 2, (winSize.height / 2) - 65);
+    CCMenu *menu = [CCMenu menuWithItems:menuItem, nil];
+    menu.position = CGPointZero;
+    [self addChild:menu];
     
     [self changeHeight:winSize.height];
     [self changeWidth:winSize.width];
@@ -35,7 +38,7 @@
 
 - (void)starButtonTapped:(id)sender
 {
-    [[CCDirector sharedDirector] pushScene:[[GameScene alloc] init]];
+    [[CCDirector sharedDirector] replaceScene:[[GameScene alloc] init]];
 }
 
 @end

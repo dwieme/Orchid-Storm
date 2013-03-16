@@ -13,7 +13,8 @@ typedef enum {
     Dumb,
     TargetPlayer,
     TargetPoint,
-    Spread
+    Spread,
+    NotShooting
 } FireType;
 
 @property (nonatomic) MovementType movementType;

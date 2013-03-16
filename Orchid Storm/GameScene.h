@@ -1,12 +1,20 @@
-#import "CCScene.h"
 #import "cocos2d.h"
-#import "GameLayer.h"
-#import "Enemy.h"
+
+@class GameLayer;
+@class Enemy;
+@class Player;
 
 #define SCROLL_SPEED 3
 
+typedef enum {
+    Flying, Driving, Landing, TakingOff
+} PlayerState;
+
 @interface GameScene : CCScene
 @property (nonatomic, strong) Player *player;
+@property (nonatomic) PlayerState playerState;
+@property (nonatomic, strong) GameLayer *groundLayer;
+@property (nonatomic, strong) GameLayer *skyLayer;
 
 + (CGFloat)screenWidth;
 + (CGFloat)screenHeight;

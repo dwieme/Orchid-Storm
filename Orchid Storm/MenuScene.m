@@ -1,6 +1,5 @@
 #import "MenuScene.h"
-#import "GameScene.h"
-#import "cocos2d.h"
+#import "MenuLayer.h"
 
 @implementation MenuScene
 

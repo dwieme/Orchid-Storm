@@ -1,6 +1,7 @@
-#import <Foundation/Foundation.h>
-#import "cocos2d.h"
 #import "Updateable.h"
+#import "CCNode.h"
+
+@class CCSprite;
 
 @interface Unit : CCNode <Updateable>
 

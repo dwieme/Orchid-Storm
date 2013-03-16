@@ -1,4 +1,5 @@
 #import "Player.h"
+#import "cocos2d.h"
 #import "GameScene.h"
 
 #define MOVEMENT_SPEED_MODIFIER 12

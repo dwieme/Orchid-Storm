@@ -1,4 +1,5 @@
 #import "Unit.h"
+#import "cocos2d.h"
 
 @implementation Unit
 

@@ -1,26 +1,22 @@
 #import "GameScene.h"
 #import "cocos2d.h"
+#import "GameLayer.h"
+#import "Enemy.h"
 #import "Unit.h"
 #import "Player.h"
 #import "Updateable.h"
 #import "EnemySpawner.h"
 #import "Projectile.h"
 #import "Powerup.h"
+#import "MenuScene.h"
+#import "HUDLayer.h"
 #include <CoreMotion/CoreMotion.h>
 
 #define SHIP_ANIMATION_TAG 1337
 
-
-
-typedef enum {
-    Flying, Driving, Landing, TakingOff
-} PlayerState;
-
 @interface GameScene ()
 @property (nonatomic, strong) CMMotionManager *motionManager;
-@property (nonatomic, strong) GameLayer *groundLayer;
-@property (nonatomic, strong) GameLayer *skyLayer;
-@property (nonatomic) PlayerState playerState;
+@property (nonatomic, strong) HUDLayer *hudLayer;
 @property (nonatomic, strong) EnemySpawner *spawner;
 @property (nonatomic, strong) CCAction *landAction;
 @property (nonatomic, strong) CCAction *takeOffAction;
@@ -66,13 +62,19 @@ static CGFloat screenHeight;
         screenWidth = winSize.width;
         screenHeight = winSize.height;
         
+        
         _groundLayer = [[GameLayer alloc] initWithType:YES];
         _skyLayer = [[GameLayer alloc] initWithType:NO];
         
+        _hudLayer = [[HUDLayer alloc] init];
+        
         [self addChild:_groundLayer];
         [self addChild:_skyLayer];
+        [self addChild:_hudLayer];
         
         gameObjects = [[NSMutableArray alloc] init];
+        
+        [Projectile initSpriteSheetForScene:self];
 
         [self createPlayer];
         
@@ -82,6 +84,14 @@ static CGFloat screenHeight;
         if (self.motionManager.isDeviceMotionAvailable) {
             [self.motionManager startDeviceMotionUpdates];
         }
+        
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"upgrades.plist"];
+        CCSpriteBatchNode *groundUpgradeSpriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"upgrades.png"];
+        [self.groundLayer addChild:groundUpgradeSpriteSheet];
+        
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"upgrades.plist"];
+        CCSpriteBatchNode *skyUpgradeSpriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"upgrades.png"];
+        [self.skyLayer addChild:skyUpgradeSpriteSheet];
     }
     
     return self;
@@ -117,7 +127,7 @@ static CGFloat screenHeight;
     
     // BANK RIGHT ANIMATION
     NSMutableArray *bankRightAnimFrames = [NSMutableArray array];
-    for(int i = 24; i <= 28; ++i)
+    for(int i = 28; i <= 31; ++i)
     {
         [bankRightAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
     }
@@ -127,7 +137,7 @@ static CGFloat screenHeight;
     
     // BANK RIGHT TO NORMAL ANIMATION
     NSMutableArray *bankRightToNormalAnimFrames = [NSMutableArray array];
-    for(int i = 28; i >= 24; --i)
+    for(int i = 31; i >= 28; --i)
     {
         [bankRightToNormalAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
     }
@@ -137,7 +147,7 @@ static CGFloat screenHeight;
     
     // BANK LEFT ANIMATION
     NSMutableArray *bankLeftAnimFrames = [NSMutableArray array];
-    for(int i = 29; i <= 32; ++i)
+    for(int i = 24; i <= 27; ++i)
     {
         [bankLeftAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
     }
@@ -147,7 +157,7 @@ static CGFloat screenHeight;
     
     // BANK LEFT TO NORMAL ANIMATION
     NSMutableArray *bankLeftToNormalAnimFrames = [NSMutableArray array];
-    for(int i = 32; i >= 29; --i)
+    for(int i = 27; i >= 24; --i)
     {
         [bankLeftToNormalAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"Player%04d", i]]];
     }
@@ -156,17 +166,29 @@ static CGFloat screenHeight;
     self.bankLeftToNormalAction.tag = SHIP_ANIMATION_TAG;
     
     CCSprite *playerSprite = [CCSprite spriteWithSpriteFrameName:@"Player0023"];
-    [playerSprite setScale:playerSprite.scale * 0.5];
+//    [playerSprite setScale:playerSprite.scale * 0.5];
     self.player = [[Player alloc] initWithSprite:playerSprite
                                      andPosition:ccp(winSize.width * 0.5,
-                                                     (playerSprite.contentSize.height * 0.5) - 40)
-                                          health:10
-                                          damage:5
+                                                     (playerSprite.contentSize.height * 0.5))
+                                          health:STARTING_HEALTH
+                                          damage:1
                                         onGround:YES];
     self.playerState = Driving;
     [gameObjects addObject:self.player];
     
     [self.groundLayer addUnit:self.player];
+}
+
+- (void)respawnPlayer
+{
+    self.player.health = STARTING_HEALTH;
+    [gameObjects addObject:self.player];
+    if(self.player.onGround){
+        [self.groundLayer addUnit:self.player];
+    }
+   else{
+        [self.skyLayer addUnit:self.player];
+    }
 }
 
 + (void)addGameObject:(id)object
@@ -197,6 +219,12 @@ static CGFloat screenHeight;
     
     [self scrollBackground:self.groundLayer.backgroundOne];
     [self scrollBackground:self.groundLayer.backgroundTwo];
+    if(self.playerState !=  Driving){
+        [self scrollBackground:self.skyLayer.cloudOne];
+        [self scrollBackground:self.skyLayer.cloudTwo];
+        [self scrollBackground:self.skyLayer.cloudThree];
+        [self scrollBackground:self.skyLayer.cloudFour];
+    }
     
     for (int i = [gameObjects count] - 1; i >= 0; --i) {
         id object = gameObjects[i];
@@ -212,7 +240,7 @@ static CGFloat screenHeight;
         if ([object isMemberOfClass:[Enemy class]]) {
             Enemy *enemy = (Enemy *)object;
             Player *player = self.player;
-            if (enemy.onGround == player.onGround)
+            if (((enemy.onGround && self.playerState == Driving)||((!enemy.onGround && self.playerState == Flying))) && player.health>0)
             {
                 NSInteger diffX = [player position].x - [enemy position].x;
                 NSInteger diffY = [player position].y - [enemy position].y;
@@ -221,7 +249,19 @@ static CGFloat screenHeight;
                 {
                     enemy.health = 0;
                     player.health -= enemy.damage;
+                    [player.sprite setColor:ccc3(255, 0, 0)];
+                    [player.sprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:0.1], [CCCallBlock actionWithBlock:^{
+                        [player.sprite setColor:ccc3(255, 255, 255)];
+                    }], nil]];
                 }
+            }
+            if(enemy.onGround && !player.onGround && enemy.movementType != Landlocked){
+                enemy.movementType = Landlocked;
+                enemy.velocity = ccp(0,-SCROLL_SPEED);
+            }
+            if(!enemy.onGround && player.onGround && enemy.movementType != Landlocked){
+                enemy.movementType = Landlocked;
+                enemy.velocity = ccp(0,-SCROLL_SPEED);
             }
         }
         
@@ -234,7 +274,7 @@ static CGFloat screenHeight;
             }
             
             Player *player = self.player;
-            if (powerUp.onGround == player.onGround)
+            if (powerUp.onGround == player.onGround && player.health>0)
             {
                 NSInteger diffX = [player position].x - [powerUp position].x;
                 NSInteger diffY = [player position].y - [powerUp position].y;
@@ -246,7 +286,9 @@ static CGFloat screenHeight;
                             player.health += powerUp.health;
                             break;
                         case Life:
-                            player.lives += powerUp.health;
+                            if(player.lives < 3){
+                                player.lives += powerUp.health;
+                            }
                             break;
                         case Weapon:
                             player.weaponType +=1;
@@ -282,6 +324,11 @@ static CGFloat screenHeight;
                             if(manhattanDist < 625)
                             {
                                 enemy.health -= proj.damage;
+                                
+                                [enemy.sprite setColor:ccc3(255, 0, 0)];
+                                [enemy.sprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:0.1], [CCCallBlock actionWithBlock:^{
+                                    [enemy.sprite setColor:ccc3(255, 255, 255)];
+                                }], nil]];
                                 proj.health = 0;
                             }
                         }
@@ -309,7 +356,7 @@ static CGFloat screenHeight;
             else
             {
                 Player *player = self.player;
-                if (proj.onGround == player.onGround)
+                if (((proj.onGround && self.playerState == Driving)||((!proj.onGround && self.playerState == Flying))) && player.health>0)
                 {
                     NSInteger diffX = [player position].x - [proj position].x;
                     NSInteger diffY = [player position].y - [proj position].y;
@@ -317,6 +364,12 @@ static CGFloat screenHeight;
                     if(manhattanDist < 625)
                     {
                         player.health -= proj.damage;
+                        
+                        [player.sprite setColor:ccc3(255, 0, 0)];
+                        [player.sprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:0.1], [CCCallBlock actionWithBlock:^{
+                            [player.sprite setColor:ccc3(255, 255, 255)];
+                        }], nil]];
+                        
                         proj.health = 0;
                     }
                 }
@@ -330,11 +383,31 @@ static CGFloat screenHeight;
             if (unit.health <= 0) {
                 
                 if([unit isMemberOfClass:[Enemy class]]){
-                    int r = arc4random() % 100;
+                    int  drop = arc4random() % 100;
                     
-                    if(r > 0){
-                        CCSprite *puSprite = [[CCSprite alloc] initWithFile:@"ButtonStar.png"];
-                        Powerup *p = [[Powerup alloc] initWithSprite:puSprite andPosition:unit.position health:1 damage:1 onGround:unit.onGround type:Weapon];
+                                        
+                    if(drop > 66){
+                        PowerupType type;
+                        int hp = 1;
+                        CCSprite *puSprite ;
+
+                        drop = arc4random() % 100;
+                        if(drop > 30){
+                            puSprite = [[CCSprite alloc] initWithSpriteFrameName:@"Upgrades0000"];
+                            type = Weapon;
+                        }
+                        else if(drop > 5){
+                            type = Health;
+                            puSprite = [[CCSprite alloc] initWithSpriteFrameName:@"Upgrades0001"];
+                            hp = (arc4random() % 5) +1;
+                        }
+                        else{
+                            puSprite = [[CCSprite alloc] initWithSpriteFrameName:@"Upgrades0002"];
+                            type = Life;
+                        }
+                        [puSprite setScale:1.5];
+                        
+                        Powerup *p = [[Powerup alloc] initWithSprite:puSprite andPosition:unit.position health:hp damage:1 onGround:unit.onGround type:type];
                         if(unit.onGround){
                             [self.groundLayer addUnit:p];
                         } else {
@@ -342,8 +415,24 @@ static CGFloat screenHeight;
                         }
                         [gameObjects addObject:p];
                     }
+                    
+                    
+                    
                 }
                 
+                if([unit isMemberOfClass:[Player class]]){
+                    self.player.lives -=1;
+                    self.player.damage = 1;
+                    self.player.weaponType = 1;
+                    if(self.player.lives == 0){
+                        [[CCDirector sharedDirector] replaceScene:[[MenuScene alloc] init]];
+                    }
+                    else{
+                       
+                        [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:2], [CCCallFunc actionWithTarget:self selector:@selector(respawnPlayer)], nil]];
+                        
+                    }
+                }
                 
                 
                 
@@ -356,7 +445,14 @@ static CGFloat screenHeight;
         }
     }
     
+    [self.hudLayer updateWithPlayer:self.player];
+    
     [self.spawner update];
+}
+
+- (void)changeColor
+{
+    
 }
 
 - (void)updatePlayer
@@ -382,8 +478,6 @@ static CGFloat screenHeight;
         {
             if (pitch > 0.1 && self.player.bankingState == Normal)
             {
-                CCLOG(@"Right: %@", self.bankRightAction);
-                
                 if ([self.player.sprite numberOfRunningActions] > 0)
                 {
                     [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
@@ -393,8 +487,6 @@ static CGFloat screenHeight;
             }
             else if (pitch < -0.1 && self.player.bankingState == Normal)
             {
-                CCLOG(@"Left: %@", self.bankLeftAction);
-                
                 if ([self.player.sprite numberOfRunningActions] > 0)
                 {
                     [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
@@ -435,9 +527,7 @@ static CGFloat screenHeight;
         if (self.playerState == Flying)
         {
             if (pitch < -0.1 && self.player.bankingState == Normal)
-            {
-                CCLOG(@"Right: %@", self.bankRightAction);
-                
+            {   
                 if ([self.player.sprite numberOfRunningActions] > 0)
                 {
                     [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];
@@ -447,8 +537,6 @@ static CGFloat screenHeight;
             }
             else if (pitch > 0.1 && self.player.bankingState == Normal)
             {
-                CCLOG(@"Left: %@", self.bankLeftAction);
-                
                 if ([self.player.sprite numberOfRunningActions] > 0)
                 {
                     [self.player.sprite stopActionByTag:SHIP_ANIMATION_TAG];

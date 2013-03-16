@@ -1,23 +1,35 @@
 #import "Projectile.h"
 #import "GameScene.h"
+#import "GameLayer.h"
 
 @implementation Projectile
 
-- (id)initWithSprite:(CCSprite *)sprite
++ (void) initSpriteSheetForScene:(GameScene*)scene
+{
+    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"bullets.plist"];
+    CCSpriteBatchNode *bulletSpritesOne = [CCSpriteBatchNode batchNodeWithFile:@"bullets.png"];
+    [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"bullets.plist"];
+    CCSpriteBatchNode *bulletSpritesTwo = [CCSpriteBatchNode batchNodeWithFile:@"bullets.png"];
+    
+    [scene.skyLayer addChild:bulletSpritesOne];
+    [scene.groundLayer addChild:bulletSpritesTwo];
+}
+
+- (id)initWithSprite:(int)spriteIndex
             position:(CGPoint)position
             velocity:(CGPoint)velocity
               damage:(NSUInteger)damage
         friendlyFire:(BOOL)friendlyFire
             onGround:(BOOL)onGround
 {
-    if(self = [super initWithSprite:sprite
+    if(self = [super initWithSprite:[[CCSprite alloc] initWithSpriteFrameName:[NSString stringWithFormat:@"Ammunition%04d", spriteIndex]]
                         andPosition:position
                              health:1
                              damage:damage
                             onGround:onGround])
     {
-        self.velocity = velocity;
-        self.friendlyFire = friendlyFire;
+        _velocity = velocity;
+        _friendlyFire = friendlyFire;
     }
     
     return self;

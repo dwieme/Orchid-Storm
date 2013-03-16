@@ -1,5 +1,7 @@
 #import "Unit.h"
 
+#define STARTING_HEALTH 10
+
 @interface Player : Unit
 
 typedef enum {

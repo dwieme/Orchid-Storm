@@ -1,6 +1,7 @@
 #import "Enemy.h"
-#import "GameScene.h"
 #import "Projectile.h"
+#import "cocos2d.h"
+#import "GameLayer.h"
 
 @interface Enemy ()
 @property (nonatomic) NSUInteger fireCounter;
@@ -28,39 +29,45 @@ typedef enum{
         case Dumb:
             if (self.fireCounter >= self.fireSpeed)
             {
-                CCSprite *sprite = [[CCSprite alloc] initWithFile:@"projectile.png"];
-                Projectile *proj = [[Projectile alloc] initWithSprite:sprite
-                                                             position:self.position
-                                                             velocity:ccp(0, -3)
-                                                               damage:self.damage
-                                                         friendlyFire:NO
-                                                             onGround:self.onGround];
-                GameLayer *layer = (GameLayer *)[self.sprite parent];
-                [layer spawnProjectile:proj];
-                self.fireCounter = 0;
+                Unit *player = ((GameScene*)self.sprite.parent.parent).player;
+                if(player.health>0 && self.onGround == player.onGround){
+                
+                    Projectile *proj = [[Projectile alloc] initWithSprite:10
+                                                                 position:self.position
+                                                                 velocity:ccp(0, -6 )
+                                                                   damage:self.damage
+                                                             friendlyFire:NO
+                                                                 onGround:self.onGround];
+                    GameLayer *layer = (GameLayer *)[self.sprite parent];
+                    [proj.sprite setScale:2];
+                    [layer spawnProjectile:proj];
+                    self.fireCounter = 0;
+                    
+                }
             }
             break;
         case TargetPlayer:
         {
-           
-            
             if (self.fireCounter >= self.fireSpeed && self.position.y > GameScene.screenHeight/3.0)
             {
                 Unit *player = ((GameScene*)self.sprite.parent.parent).player;
+                if(player.health>0 && self.onGround == player.onGround){
                 
-                CGPoint v = ccp(player.position.x - self.position.x ,player.position.y - self.position.y);
-                float mag = sqrt(v.x*v.x + v.y*v.y);
-                v = ccp(v.x * ((self.speed * 1.5)/mag),v.y * ((self.speed * 1.5)/mag));
-                CCSprite *sprite = [[CCSprite alloc] initWithFile:@"projectile.png"];
-                Projectile *proj = [[Projectile alloc] initWithSprite:sprite
-                                                             position:self.position
-                                                             velocity:v
-                                                               damage:self.damage
-                                                         friendlyFire:NO
-                                                             onGround:self.onGround];
-                GameLayer *layer = (GameLayer *)[self.sprite parent];
-                [layer spawnProjectile:proj];
-                self.fireCounter = 0;
+                    CGPoint v = ccp(player.position.x - self.position.x ,player.position.y - self.position.y);
+                    float mag = sqrt(v.x*v.x + v.y*v.y);
+                    v = ccp(v.x * ((self.speed * 1.5)/mag),v.y * ((self.speed * 1.5)/mag));
+                    Projectile *proj = [[Projectile alloc] initWithSprite:6
+                                                                 position:self.position
+                                                                 velocity:v
+                                                                   damage:self.damage
+                                                             friendlyFire:NO
+                                                                 onGround:self.onGround];
+                    GameLayer *layer = (GameLayer *)[self.sprite parent];
+                    [proj.sprite setScale:2];
+                    [proj.sprite setRotation:atanf(v.x/v.y)*(180/M_PI)];
+                    [layer spawnProjectile:proj];
+                    self.fireCounter = 0;
+                }
             }
             
             break;
@@ -69,10 +76,17 @@ typedef enum{
             break;
         case Spread:
             break;
+        case NotShooting:
+            break;
     }
     
     switch (self.movementType) {
         case Landlocked:
+            if (self.position.y < -30)
+            {
+                self.health = 0;
+            }
+            
             break;
         case Stationary:
         {
@@ -87,7 +101,6 @@ typedef enum{
                 float mag = sqrt(d.x*d.x + d.y*d.y);
                 d = ccp(d.x * (self.speed/mag),d.y * (self.speed/mag));
                 self.velocity = d;
-                CCLOG(@"%f  %f",self.velocity.x,self.velocity.y);
                 self.state = seeking;
 
             }
