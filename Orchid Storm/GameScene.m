@@ -182,6 +182,7 @@ static CGFloat screenHeight;
 - (void)respawnPlayer
 {
     self.player.health = STARTING_HEALTH;
+    [self.player.sprite setColor:ccc3(255,255,255)];
     [gameObjects addObject:self.player];
     if(self.player.onGround){
         [self.groundLayer addUnit:self.player];

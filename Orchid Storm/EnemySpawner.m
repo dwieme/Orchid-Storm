@@ -49,7 +49,7 @@
     
     if (self.ticks % (200-self.level*20) ==0)
     {
-        int rand = arc4random()%4;
+        int rand = arc4random()%5;
         switch(rand)
         {
             case 0:
@@ -64,7 +64,10 @@
             case 3:
                 [self spawnRandSmartTurret:self.level damage:self.level attackSpeed:(120/self.level)];
                 break;
-        }       
+            case 4:
+                [self spawnRandDumbJeep:self.level damage:self.level attackSpeed:(120/self.level)];
+                break;
+        }
     }
 }
 -(void)updateSky
