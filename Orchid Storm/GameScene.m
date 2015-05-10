@@ -348,6 +348,11 @@ static CGFloat screenHeight;
                             if(manhattanDist < 625)
                             {
                                 enemy.health -= proj.damage;
+                                
+                                [enemy.sprite setColor:ccc3(255, 0, 0)];
+                                [enemy.sprite runAction:[CCSequence actions:[CCDelayTime actionWithDuration:0.1], [CCCallBlock actionWithBlock:^{
+                                    [enemy.sprite setColor:ccc3(255, 255, 255)];
+                                }], nil]];
                                 proj.health = 0;
                             }
                         }

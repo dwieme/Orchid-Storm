@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>frames</key>
+		<dict>
+			<key>Splash Main0000</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,0},{988,650}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{988,650}}</string>
+				<key>sourceSize</key>
+				<string>{988,650}</string>
+			</dict>
+		</dict>
+		<key>metadata</key>
+		<dict>
+			<key>format</key>
+			<integer>2</integer>
+			<key>realTextureFileName</key>
+			<string>mainSplash.png</string>
+			<key>size</key>
+			<string>{1000,650}</string>
+			<key>textureFileName</key>
+			<string>mainSplash.png</string>
+		</dict>
+	</dict>
+</plist>
